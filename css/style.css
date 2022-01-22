@@ -1,0 +1,43 @@
+/* 
+
+Project Name: Beau's Site
+Client: Beau's Site
+Author: Beau De Looze 
+
+*/
+
+body {
+	/*background: url('../images/galaxy bg.jfif');*/
+	/* the follow is the code to have the image display as a full page */
+	background-position: center;
+	background-attachment: fixed;
+	-webkit-background-size: cover; /* the next 3 lines are "browser prefixes", they are necessary to include for CSS3 techniques */
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+#container {
+          background: black;
+	 width: 1600x900px;
+	 color: white;
+}
+
+h1 {
+	font-size: 30px;
+	color: red;
+}
+
+h2 {
+	font-size: 20px;
+	background-color: blue;
+
+}
+
+h3 {
+	font-size: 20px;
+	background-color: red;
+
+}
+
+
