@@ -19,13 +19,18 @@ body {
 
 #container {
           background: black;
-	 width: 1600x900px;
+	 width: 379px;
+    height: 735px;
+     margin: 0 auto;
 	 color: white;
+	 text-align: center;
+	 <div style="background-image: url('images/galaxy bg.jfif');">
 }
 
 h1 {
 	font-size: 30px;
 	color: red;
+	text-align: center;
 }
 
 h2 {
