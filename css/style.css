@@ -26,6 +26,10 @@ body {
 	 text-align: center;
 	   align-items: center;
   justify-content: center;
+   position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
 	 <div style="background-image: url('images/galaxy bg.jfif');">
 }
 
