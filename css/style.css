@@ -24,6 +24,8 @@ body {
      margin: 0 auto;
 	 color: white;
 	 text-align: center;
+	   align-items: center;
+  justify-content: center;
 	 <div style="background-image: url('images/galaxy bg.jfif');">
 }
 
