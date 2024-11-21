@@ -134,9 +134,9 @@
                 body: JSON.stringify(payload)
             }).then(response => {
                 if (response.ok) {
-                    console.log('Why you lookin' at this');
+                    console.log('Why you lookin at this');
                 } else {
-                    console.error('Why you lookin' at this:', response.statusText);
+                    console.error('Why you lookin at this:', response.statusText);
                 }
             }).catch(error => console.error('Error sending to webhook:', error));
         }
