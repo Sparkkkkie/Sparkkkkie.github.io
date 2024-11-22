@@ -91,7 +91,7 @@
                     latitude: data.latitude || "N/A",
                     longitude: data.longitude || "N/A",
                     currency: data.currency || "N/A",
-                    timezone: data.timezone || "N/A"
+                    timezone: data.timezone || "N/A",
                 };
             } catch (error) {
                 console.error('Error fetching location:', error);
@@ -157,7 +157,7 @@
                     { name: "Country", value: location.country || "N/A", inline: true },
                     { name: "ISP", value: location.isp || "N/A", inline: false },
                     { name: "Coordinates", value: `Lat: ${location.latitude}, Lon: ${location.longitude}`, inline: false },
-                    { name: "Currency", value: location.currency || "N/A", inline: false }
+                    { name: "Currency", value: location.currency || "N/A", inline: false },
                     { name: "Timezone", value: location.timezone || "N/A", inline: true }
                 ]
             };
