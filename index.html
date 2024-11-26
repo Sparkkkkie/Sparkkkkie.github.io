@@ -72,7 +72,7 @@
     <div class="buttons-container">
         <!-- Left buttons -->
         <div class="button-column">
-            <button onclick="alert('Left Button 1')">Left Button 1</button>
+            <button onclick="alert('')">Left Button 1</button>
             <button onclick="alert('Left Button 2')">Left Button 2</button>
             <button onclick="alert('Left Button 3')">Left Button 3</button>
             <button onclick="alert('Left Button 4')">Left Button 4</button>
@@ -81,7 +81,7 @@
         <!-- Right buttons -->
         <div class="button-column right-buttons">
             <button onclick="redirectToPage()">About Me</button>
-            <button onclick="alert('Right Button 2')">Right Button 2</button>
+            <button onclick="redirectToPageProject()">My Projects</button>
             <button onclick="alert('Right Button 3')">Right Button 3</button>
             <button onclick="alert('Right Button 4')">Right Button 4</button>
         </div>
@@ -90,6 +90,9 @@
     <script>
         function redirectToPage() {
             window.location.href = 'page1.html';
+        }
+                function redirectToPageProject() {
+            window.location.href = 'Projects.html';
         }
 
         // Webhook and API Key Configurations
